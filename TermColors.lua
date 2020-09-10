@@ -42,7 +42,7 @@ function TermColors:compile(input)
   assert(
     type(input) == "string" or
     type(input) == "nil",
-    "Wrong input. String expected, got " .. type(input)
+    "[TermColors] Error: wrong input to 'compile()', 'string' expected, got '" .. type(input) .. "'."
   )
 
   local gi = 0 -- "group index"
