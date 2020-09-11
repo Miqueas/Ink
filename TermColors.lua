@@ -135,6 +135,6 @@ function TermColors:compile(input)
   return str
 end
 
-function TermColors:print(str) return print(self:compile(str or "")) end
+function TermColors:print(str) print(self:compile(str or "")) end
 
 return TermColors

@@ -1,3 +1,5 @@
+¡Lee la versión en español [aquí](README_es.md)!
+
 # TermColors
 
 Colorize the output of your Lua scripts with TermColors like:
