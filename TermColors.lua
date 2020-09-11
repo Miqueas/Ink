@@ -14,6 +14,8 @@ local function split(str, sep)
   return t
 end
 
+TermColors.ESC = string.char(27)
+
 TermColors.Attr = {
   None      = "0", Bold   = "1",
   Dim       = "2", Italic = "3",
