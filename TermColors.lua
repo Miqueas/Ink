@@ -1,3 +1,10 @@
+--[[
+  Author: Miqueas Martinez (miqueas2020@yahoo.com)
+  Date: 2020/09/10
+  License: MIT (see it in the repository)
+  Git Repository: https://github.com/M1que4s/TermColors
+]]
+
 local TermColors = {}
 local Tokens = {
   -- Attributes:
