@@ -7,23 +7,28 @@
 
 local TermColors = {}
 local Tokens = {
-  -- Attributes:
+  -- Attributes
   "None", "Bold", "Dim", "Italic", "Underline", "DobleU", "Blink", "Reverse", "Hidden", "Strike",
-  -- Predefined colors (3/4 bits):
+  -- Predefined colors
   "Black", "Red", "Green", "Yellow", "Blue", "Magenta", "Cyan", "White"
 }
 
-local function tokExists(val) for i=1, #Tokens do if val == Tokens[i] then return true end end; return false end
-local function split(str, sep)
+local function tokExists(val) -- Check if the given value is a valid token
+  for i=1, #Tokens do
+    if val == Tokens[i] then return true end
+  end
+  return false
+end
+
+local function split(str, sep) -- Like 'split()' in JS
   local sep = sep or "%s"
   local t = {}
-  for e in str:gmatch("([^" .. sep .. "]+)") do table.insert(t, e) end
+  for e in str:gmatch("([^" .. sep .. "]+)") do t[#t+1] = e end
   return t
 end
 
 TermColors.ESC = string.char(27)
-
-TermColors.Attr = {
+TermColors.Attr = { -- Text attributes
   None      = "0", Bold   = "1",
   Dim       = "2", Italic = "3",
   Underline = "4", Blink  = "5",
@@ -31,7 +36,7 @@ TermColors.Attr = {
   Strike    = "9", DobleU = "21" -- "Doble Underline"
 }
 
-TermColors.FG = {
+TermColors.FG = { -- Predefined colors for foreground
   Black = "30", Red     = "31",
   Green = "32", Yellow  = "33",
   Blue  = "34", Magenta = "35",
@@ -39,7 +44,7 @@ TermColors.FG = {
   FG    = "38"
 }
 
-TermColors.BG = {
+TermColors.BG = { -- Predefined colors for background
   Black = "40", Red     = "41",
   Green = "42", Yellow  = "43",
   Blue  = "44", Magenta = "45",
@@ -48,36 +53,34 @@ TermColors.BG = {
 }
 
 function TermColors:compile(input)
-  assert(
-    type(input) == "string" or
-    type(input) == "nil",
-    "[TermColors] Error: wrong input to 'compile()', 'string' expected, got '" .. type(input) .. "'."
-  )
+  assert(type(input) == "string", "wrong input to 'compile()', string expected, got '" .. type(input) .. "'.")
 
-  local gi = 0 -- "group index"
-  local tn = 0 -- "token number"
+  local gi = 0 -- "group index": Used to count the number of "style" groups in the string
+  local tn = 0 -- "token number": Like 'gi', but for count the number of "style properties" in a group
   local esc = string.char(27)
-
-  local str = input:gsub("(%#%{[%w%s%(%)%;%,]+%})", function (match)
+  local str = input:gsub("(%#%{(.-)%})", function (match) -- Caught "style" groups in the input
     gi = gi + 1
     match = match:gsub("%s", "")
-
-    match = match:gsub("([%w%s%(%)%;%,]+)", function (props)
-      for _, val in pairs(split(props, ";")) do
+    match = match:gsub("%#%{(.-)%}", function (props)
+      for _, val in pairs(split(props, ";")) do -- Split down all properties in separated values
         tn = tn + 1
 
-        if val:match("%w%(.*%)") then
-          local func, farg = val:match("(%w+)%((.*)%)")
+        if val:match("%w%(.*%)") then -- Check if 'val' is a function
+          local func, farg = val:match("(%w+)%((.*)%)") -- Gets the function name an their arguments
           local rgb = nil
 
-          if farg:find("RGB") and farg:match("RGB%((%d?%d?%d?,%d?%d?%d?,%d?%d?%d?)%)") then
-            farg = farg:gsub("[%(%)]", ""):gsub("RGB", "2;"):gsub(",", ";")
+          if farg:find("RGB") and farg:match("RGB%((%d+,%d+,%d+)%)") then
+            farg = farg
+              :gsub("[%(%)]", "") -- Remove parentheses
+              :gsub("RGB", "2;") -- Replace the 'RGB' function name by the correct needed value
+              :gsub(",", ";") -- ...
             rgb  = true
-          elseif farg:find("RGB") and not farg:match("RGB%((%d?%d?%d?,%d?%d?%d?,%d?%d?%d?)%)") then
+          elseif farg:find("RGB") and not farg:match("RGB%((%d+,%d+,%d+)%)") then
             -- Error: bad call to RGB() function
-            print("[TermColors] Error: bad call to RGB() function.")
-            print("                ==> @ group #"..gi.." ("..match.."), token #"..tn.." ("..val..").")
-            os.exit(1)
+            error(
+              ("Bad call to RGB() function.\n\t→ in input: %s\n\t→ in group #%s: %s\n\t→ in token #%s: %s")
+              :format(input, gi, match, tn, val)
+            )
           end
 
           if func == "FG" or func == "BG" then
@@ -88,54 +91,65 @@ function TermColors:compile(input)
                   props = props:gsub(func .. "%(?" .. farg .. "%)?", self[func][func] .. ";5;" .. farg)
                 else
                   -- Error: 8-bit color value out of range
-                  print("[TermColors] Error: 8-bit color value (%s"..farg.."%s) out of range.")
-                  print("                ==> @ group #"..gi.." (%s"..match.."%s), token #"..tn.." (%s"..val.."%s).")
-                  os.exit(1)
+                  error(
+                    ("8-bit color value out of range: %s.\n\t→ in input: %s\n\t→ in group #%s: %s\n\t→ in token #%s: %s")
+                    :format(farg, input, gi, match, tn, val)
+                  )
                 end
               else
                 -- Error: unknown pre-defined color
-                print("[TermColors] Error: wrong color '"..farg.."'.")
-                print("                ==> @ group #"..gi.." ("..match.."), token #"..tn.." ("..val..").")
-                os.exit(1)
+                error(
+                  ("wrong color '%s'.\n\t→ in input: %s\n\t→ in group #%s: %s\n\t→ in token #%s: %s")
+                  :format(farg, input, gi, match, tn, val)
+                )
               end
             elseif rgb then
-              props = props:gsub(func, self[func][func]..";2;"):gsub("[%(%)]+", ""):gsub("RGB", ""):gsub(",", ";")
+              props = props:gsub(func, self[func][func]..";2;")
+                :gsub("[%(%)]+", "")
+                :gsub("RGB", "")
+                :gsub(",", ";")
             else
               -- Error: idk...
-              print("[TermColors] Error: something's wrong...")
-              print("                ==> @ group #"..gi.." ("..match.."), token #"..tn.." ("..val..").")
-              os.exit(1)
+              error(
+                  ("something's wrong...\n\t→ in input: %s\n\t→ in group #%s: %s\n\t→ in token #%s: %s")
+                  :format(input, gi, match, tn, val)
+                )
             end
           elseif func == "RGB" then
             -- Error: calling RGB() function outside FG() and BG() functions is not allowed
-            print("[TermColors] Error: calling RGB() function outside FG() and BG() functions is not allowed.")
-            print("                ==> @ group #"..gi.." ("..match.."), token #"..tn.." ("..val..").")
-            os.exit(1)
+            error(
+              ("calling RGB() outside FG() and BG() is not allowed\n\t→ in input: %s\n\t→ in group #%s: %s\n\t→ in token #%s: %s")
+              :format(input, gi, match, tn, val)
+            )
           else
             -- Error: unknown function name
-            print("[TermColors] Error: unknown function '"..func.."'.")
-            print("                ==> @ group #"..gi.." ("..match.."), token #"..tn.." ("..val..").")
-            os.exit(1)
+            error(
+              ("unknown function '%s'.\n\t→ in input: %s\n\t→ in group #%s: %s\n\t→ in token #%s: %s")
+              :format(func, input, gi, match, tn, val)
+            )
           end
         elseif tokExists(val) and self.Attr[val] then props = props:gsub(val, self.Attr[val])
         elseif tokExists(val) and not self.Attr[val] then
           -- Error: trying to use a color value outside FG() and BG() functions is not allowed
-          print("[TermColors] Error: trying to use a color value outside FG() and BG() functions is not allowed.")
-          print("                ==> @ group #"..gi.." ("..match.."), token #"..tn.." ("..val..").")
-          os.exit(1)
+          error(
+            ("trying to use a color value outside FG() and BG() functions is not allowed.\n\t→ in input: %s\n\t→ in group #%s: %s\n\t→ in token #%s: %s")
+            :format(input, gi, match, tn, val)
+          )
         else
           -- Error: unknown property
-          print("[TermColors] Error: unknown property '" .. val .. "'.")
-          print("                ==> @ group #"..gi.." ("..match.."), token #"..tn.." ("..val..").")
-          os.exit(1)
+          error(
+            ("unknown property '%s'.\n\t→ in input: %s\n\t→ in group #%s: %s\n\t→ in token #%s: %s")
+            :format(val, input, gi, match, tn, val)
+          )
         end
       end
 
       return props
     end)
 
+    match = esc.."["..match.."m"
     tn = 0
-    match = match:gsub("^(%#%{)", string.char(27).."["):gsub(";*%}$", "m")
+
     return match
   end)
 
@@ -144,4 +158,4 @@ end
 
 function TermColors:print(str) print(self:compile(str or "")) end
 
-return TermColors
+return setmetatable(TermColors, { __call = TermColors.print })
