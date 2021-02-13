@@ -1,3 +1,5 @@
+[![License][LicenseBadge]][licenseURL]
+
 ¡Lee la versión en español [aquí](README_es.md)!
 
 # TermColors
@@ -93,3 +95,5 @@ I made this using the info provide by Wikipedia in [this article][4]
 [2]: https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit
 [3]: https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit
 [4]: https://en.wikipedia.org/wiki/ANSI_escape_code
+[LicenseBadge]: https://img.shields.io/badge/License-Zlib-brightgreen?style=for-the-badge
+[LicenseURL]: https://opensource.org/licenses/Zlib
