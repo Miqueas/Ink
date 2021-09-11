@@ -1,9 +1,32 @@
 --[[
   Author: Miqueas Martinez (miqueas2020@yahoo.com)
   Date: 2020/09/10
-  License: ZLIB (see it in the repository)
   Git Repository: https://github.com/M1que4s/TermColors
+  License:
+    zlib License
+
+    Copyright (c) 2020 - 2021 Miqueas Martinez
+
+    This software is provided 'as-is', without any express or implied
+    warranty. In no event will the authors be held liable for any damages
+    arising from the use of this software.
+
+    Permission is granted to anyone to use this software for any purpose,
+    including commercial applications, and to alter it and redistribute it
+    freely, subject to the following restrictions:
+
+      1. The origin of this software must not be misrepresented; you must not
+         claim that you wrote the original software. If you use this software
+         in a product, an acknowledgment in the product documentation would be
+         appreciated but is not required.
+
+      2. Altered source versions must be plainly marked as such, and must not be
+         misrepresented as being the original software.
+
+      3. This notice may not be removed or altered from any source
+         distribution.
 ]]
+
 
 local TermColors = {}
 local Tokens = {
@@ -27,6 +50,7 @@ local function split(str, sep) -- Like 'split()' in JS
   return t
 end
 
+TermColors.Cache = {}
 TermColors.ESC = string.char(27)
 TermColors.Attr = { -- Text attributes
   None      = "0", Bold   = "1",
@@ -53,6 +77,7 @@ TermColors.BG = { -- Predefined colors for background
 }
 
 function TermColors:compile(input)
+  if TermColors.Cache[input] then return TermColors.Cache[input] end
   assert(type(input) == "string", "wrong input to 'compile()', string expected, got '" .. type(input) .. "'.")
 
   local gi = 0 -- "group index": Used to count the number of "style" groups in the string
@@ -153,9 +178,13 @@ function TermColors:compile(input)
     return match
   end)
 
+  if not TermColors.DisableCache then
+    TermColors.Cache[input] = str
+  end
+
   return str
 end
 
-function TermColors:print(str) print(self:compile(str or "")) end
+function TermColors:print(str, ...) print(self:compile(str or ""):format(...)) end
 
 return setmetatable(TermColors, { __call = TermColors.print })
