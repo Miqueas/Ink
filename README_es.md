@@ -29,8 +29,6 @@ Salida:
 
 ![Capture 2](cap2_esp.png)
 
-La palabra "is" aquí tiene el efecto "Blink", es por eso que no se puede apreciar en la captura.
-
 ### Uso
 
 Usar TermColors es realmente simple, solamente coloca las propiedades de salida que deseas dentro de `#{}`, separa cada una con puntos y coma (;) y TermColors hace lo demás. TermColors permite las siguientes propiedades:
