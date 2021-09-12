@@ -185,6 +185,6 @@ function TermColors:compile(input)
   return str
 end
 
-function TermColors:print(str, ...) print(self:compile(tostring(str or "")):format(...)) end
+function TermColors:print(str, ...) print(self:compile(tostring(str or "")):format(...)) end;
 
 return setmetatable(TermColors, { __call = TermColors.print })
