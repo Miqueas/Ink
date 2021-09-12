@@ -19,14 +19,15 @@ Sin embargo eso es solo una muestra simple, puedes hacer cosas más complejas co
 
 ```lua
 local tc = require("TermColors")
-local my_string = "#{Bold}This#{None} #{Blink; Italic}is#{None} #{Reverse; FG(RGB(167, 110, 78))}a#{None} #{DobleU; Strike}more#{None} #{BG(146)}complex#{None} example."
+local my_string = "#{Bold}Estes#{None} #{Blink; Italic}es#{None} #{Reverse; FG(RGB(167, 110, 78))}un#{None} #{DobleU; Strike}ejemplo#{None} #{BG(146)}mas#{None} %s"
+local my_format = "complejo."
 
-tc:print(my_string)
+tc:print(my_string, my_format)
 ```
 
 Salida:
 
-![Capture 2](cap2.png)
+![Capture 2](cap2_esp.png)
 
 La palabra "is" aquí tiene el efecto "Blink", es por eso que no se puede apreciar en la captura.
 
@@ -63,19 +64,21 @@ Las funciones `FG()` y `BG()` toman 3 tipos de argumentos y solo 1 de estos a la
 TermColors es sensible a mayúsculas y minúsculas, sabe que `FG` es una función para el color del texto en sí, pero `fg` es otra cosa. También, TermColors provee 2 funciones/métodos:
 
   1. `compile()`: toma un string, convierte todos los grupos `#{}` en una secuencia de escape ANSI y retorna el resultado.
-  2. `print()`: toma un string, se lo pasa a `compile()` e imprime el resultado directamente (no retorna).
+  2. `print()`: toma un string, lo `format()`ea con los demas argumentos, se lo pasa a `compile()` e imprime el resultado directamente (no retorna).
 
 Por supuesto, si deseas usar códigos ANSI manualmente, TermColors provee:
 
-  - `TermColors.ESC`: el caracter utilizado para esto (`0x1b`).
-  - `TermColors.Attr`: puede que el nombre no sea correcto, pero básicamente contiene los números/códigos para los "efectos".
-  - `TermColors.FG`: contiene colores predefinidos (los que se ven en la primera lista). Puedes usarlos así:
+  - `TermColors.Cache`: De proposito interno, contiene todas las strings cacheadas.
+  - `TermColors.DisableCache`: Desactiva el cache si es `true`, `false` por defecto.
+  - `TermColors.ESC`: El caracter utilizado para esto (`0x1b`).
+  - `TermColors.Attr`: Puede que el nombre no sea correcto, pero básicamente contiene los números/códigos para los "efectos".
+  - `TermColors.FG`: Contiene colores predefinidos (los que se ven en la primera lista). Puedes usarlos así:
     ```lua
     local tc = require("TermColors")
     local my_string = tc.ESC .. "[" .. tc.FG.Green .. "mTesting!" .. tc.ESC .. "[" .. tc.Attr.None
     print(my_string)
     ```
-  - `TermColors.BG`: igual que `FG`, pero para colores de fondo.
+  - `TermColors.BG`: Igual que `FG`, pero para colores de fondo.
 
 __Es muy importante separar las propiedades con puntos y comas (por favor lee "Limitaciones" a continuación).__
 
