@@ -70,9 +70,11 @@ TermColors is case-sensitive. TermColors know that `FG` is a function for foregr
 
 Of course, if you want to use manually ANSI codes, TermColors provide:
 
-  - `TermColors.ESC`: the character for colored output (`0x1b`).
-  - `TermColors.Attr`: maybe the name is not correct, but basically contains the number code for output "effects".
-  - `TermColors.FG`: contains predefined colors (see the first list). You can use it like:
+  - `TermColors.Cache`: For internal purposes, contains the cached strings.
+  - `TermColors.DisableCache`: Disables the caching if `true`, `false` by default.
+  - `TermColors.ESC`: The character for colored output (`0x1b`).
+  - `TermColors.Attr`: Maybe the name is not correct, but basically contains the number code for output "effects".
+  - `TermColors.FG`: Contains predefined colors (see the first list). You can use it like:
     ```lua
     local tc = require("TermColors")
     local my_string = tc.ESC .. "[" .. tc.FG.Green .. "mTesting!" .. tc.ESC .. "[" .. tc.Attr.None
