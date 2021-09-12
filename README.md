@@ -21,16 +21,17 @@ But that is a simple example. You can make a more complex output like this:
 
 ```lua
 local tc = require("TermColors")
-local my_string = "#{Bold}This#{None} #{Blink; Italic}is#{None} #{Reverse; FG(RGB(167, 110, 78))}a#{None} #{DobleU; Strike}more#{None} #{BG(146)}complex#{None} example."
+local my_string = "#{Bold}This#{None} #{Blink; Italic}is#{None} #{Reverse; FG(RGB(167, 110, 78))}a#{None} #{DobleU; Strike}more#{None} #{BG(146)}complex#{None} %s."
+local my_format = "example"
 
-tc:print(my_string)
+tc:print(my_string, my_format)
 ```
 
 Output:
 
 ![Capture 2](cap2.png)
 
-The word "is" have's the "Blink" effect, so you can't see in the capture.
+The word "is" has the "Blink" effect, so you can't see in the capture.
 
 ### Usage
 
@@ -64,8 +65,8 @@ Using TermColors is really simple, you only need put the output properties insid
 
 TermColors is case-sensitive. TermColors know that `FG` is a function for foreground colors, but `fg` is another thing. Also, TermColors provide 2 functions/methods:
 
-  1. `compile()`: take an string, convert all `#{}` groups into a ANSI escape code and returns the result string.
-  2. `print()`: take an string, pass it to `compile()` and prints it directly.
+  1. `compile()`: takes an string, convert all `#{}` groups into a ANSI escape code and returns the result string.
+  2. `print(...)`: takes an string, formats it with the rest of arguments, passes it to `compile()` and prints it directly.
 
 Of course, if you want to use manually ANSI codes, TermColors provide:
 
