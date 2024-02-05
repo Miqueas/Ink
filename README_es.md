@@ -1,28 +1,28 @@
 [![License][LicenseBadge]][licenseURL]
 
-# TermColors
+# Ink
 
-Colorea la salidad de tus scripts en Lua con TermColors! Tan simple como:
+Colorea la salidad de tus scripts en Lua con Ink! Tan simple como:
 
 ```lua
-local tc = require("TermColors")
+local ink = require("Ink")
 local my_string = "Hello, #{FG(Green)}world!#{None}"
 
-tc:print(my_string)
+ink:print(my_string)
 ```
 
-Y obtienes una salidad así:
+Y obtienes una salida así:
 
 ![Capture 1](cap1.png)
 
-Sin embargo eso es solo una muestra simple, puedes hacer cosas más complejas como:
+Puedes formar salidas mas complejas como:
 
 ```lua
-local tc = require("TermColors")
+local ink = require("Ink")
 local my_string = "#{Bold}Estes#{None} #{Blink; Italic}es#{None} #{Reverse; FG(RGB(167, 110, 78))}un#{None} #{DobleU; Strike}ejemplo#{None} #{BG(146)}mas#{None} %s"
 local my_format = "complejo."
 
-tc:print(my_string, my_format)
+ink:print(my_string, my_format)
 ```
 
 Salida:
@@ -31,7 +31,7 @@ Salida:
 
 ### Uso
 
-Usar TermColors es realmente simple, solamente coloca las propiedades de salida que deseas dentro de `#{}`, separa cada una con puntos y coma (;) y TermColors hace lo demás. TermColors permite las siguientes propiedades:
+Usar Ink es muy simple; Coloca las propiedades de salida que deseas dentro de `#{}`, separa cada una con puntos y coma (;) y Ink hace lo demás. Ink soporta las siguientes propiedades:
 
   - "Efectos":
     * None (reinicia/deshabilita todas las propiedades)
@@ -59,32 +59,32 @@ Las funciones `FG()` y `BG()` toman 3 tipos de argumentos y solo 1 de estos a la
   2. Un número del 0 al 255. [Lee esto][2]
   3. Un valor RGB usando la función `RGB()`. [Lee esto][3]
 
-TermColors es sensible a mayúsculas y minúsculas, sabe que `FG` es una función para el color del texto en sí, pero `fg` es otra cosa. También, TermColors provee 2 funciones/métodos:
+Ink es sensible a mayúsculas y minúsculas, sabe que `FG` es una función para el color del texto en sí, pero `fg` es otra cosa. También, Ink provee 2 funciones/métodos:
 
   1. `compile()`: toma un string, convierte todos los grupos `#{}` en una secuencia de escape ANSI y retorna el resultado.
   2. `print()`: toma un string, lo `format()`ea con los demas argumentos, se lo pasa a `compile()` e imprime el resultado directamente (no retorna).
 
-Por supuesto, si deseas usar códigos ANSI manualmente, TermColors provee:
+Por supuesto, si deseas usar códigos ANSI manualmente, Ink provee:
 
-  - `TermColors.Cache`: De proposito interno, contiene todas las strings cacheadas.
-  - `TermColors.DisableCache`: Desactiva el cache si es `true`, `false` por defecto.
-  - `TermColors.ESC`: El caracter utilizado para esto (`0x1b`).
-  - `TermColors.Attr`: Puede que el nombre no sea correcto, pero básicamente contiene los números/códigos para los "efectos".
-  - `TermColors.FG`: Contiene colores predefinidos (los que se ven en la primera lista). Puedes usarlos así:
+  - `Ink.Cache`: De proposito interno, contiene todas las strings cacheadas.
+  - `Ink.DisableCache`: Desactiva el cache si es `true`, `false` por defecto.
+  - `Ink.ESC`: El caracter utilizado para esto (`0x1b`).
+  - `Ink.Attr`: Puede que el nombre no sea correcto, pero básicamente contiene los números/códigos para los "efectos".
+  - `Ink.FG`: Contiene colores predefinidos (los que se ven en la primera lista). Puedes usarlos así:
     ```lua
-    local tc = require("TermColors")
-    local my_string = tc.ESC .. "[" .. tc.FG.Green .. "mTesting!" .. tc.ESC .. "[" .. tc.Attr.None
+    local ink = require("Ink")
+    local my_string = ink.ESC .. "[" .. ink.FG.Green .. "mTesting!" .. ink.ESC .. "[" .. ink.Attr.None
     print(my_string)
     ```
-  - `TermColors.BG`: Igual que `FG`, pero para colores de fondo.
+  - `Ink.BG`: Igual que `FG`, pero para colores de fondo.
 
 __Es muy importante separar las propiedades con puntos y comas (por favor lee "Limitaciones" a continuación).__
 
 ### Limitaciones
 
-Si no se usan los puntos y comas apropiadamente, la salida podría ser errónea debido a que el código de TermColors actualmente es simple y no analiza estos detalles. Es lo mismo en el caso cuando se colocan varios puntos y comas vacíos (sin propiedades entre ellos). Puede ser que hay otras limitaciones, pero por ahora estas son las que conozco
+Si no se usan los puntos y comas apropiadamente, la salida podría ser errónea debido a que el código de Ink actualmente es simple y no analiza estos detalles. Es lo mismo en el caso cuando se colocan varios puntos y comas vacíos (sin propiedades entre ellos). Puede ser que hay otras limitaciones, pero por ahora estas son las que conozco
 
-Por supuesto, estas cosas están en "TODO" ("Por Hacer") y quiero mejorar TermColors.
+Por supuesto, estas cosas están en "TODO" ("Por Hacer") y quiero mejorar Ink.
 
 ### Fuentes
 
