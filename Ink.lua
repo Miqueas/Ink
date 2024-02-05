@@ -1,7 +1,7 @@
 --[[
   Author: Miqueas Martinez (miqueas2020@yahoo.com)
   Date: 2020/09/10
-  Git Repository: https://github.com/M1que4s/TermColors
+  Git Repository: https://github.com/Miqueas/Ink
   License:
     zlib License
 
@@ -28,7 +28,7 @@
 ]]
 
 
-local TermColors = {}
+local Ink = {}
 local Tokens = {
   -- Attributes
   "None", "Bold", "Dim", "Italic", "Underline", "DobleU", "Blink", "Reverse", "Hidden", "Strike",
@@ -50,9 +50,9 @@ local function split(str, sep) -- Like 'split()' in JS
   return t
 end
 
-TermColors.Cache = {}
-TermColors.ESC = string.char(27)
-TermColors.Attr = { -- Text attributes
+Ink.Cache = {}
+Ink.ESC = string.char(27)
+Ink.Attr = { -- Text attributes
   None      = "0", Bold   = "1",
   Dim       = "2", Italic = "3",
   Underline = "4", Blink  = "5",
@@ -60,7 +60,7 @@ TermColors.Attr = { -- Text attributes
   Strike    = "9", DobleU = "21" -- "Doble Underline"
 }
 
-TermColors.FG = { -- Predefined colors for foreground
+Ink.FG = { -- Predefined colors for foreground
   Black = "30", Red     = "31",
   Green = "32", Yellow  = "33",
   Blue  = "34", Magenta = "35",
@@ -68,7 +68,7 @@ TermColors.FG = { -- Predefined colors for foreground
   FG    = "38"
 }
 
-TermColors.BG = { -- Predefined colors for background
+Ink.BG = { -- Predefined colors for background
   Black = "40", Red     = "41",
   Green = "42", Yellow  = "43",
   Blue  = "44", Magenta = "45",
@@ -76,8 +76,8 @@ TermColors.BG = { -- Predefined colors for background
   BG    = "48"
 }
 
-function TermColors:compile(input)
-  if TermColors.Cache[input] then return TermColors.Cache[input] end
+function Ink:compile(input)
+  if Ink.Cache[input] then return Ink.Cache[input] end
   assert(type(input) == "string", "wrong input to 'compile()', string expected, got '" .. type(input) .. "'.")
 
   local gi = 0 -- "group index": Used to count the number of "style" groups in the string
@@ -178,13 +178,13 @@ function TermColors:compile(input)
     return match
   end)
 
-  if not TermColors.DisableCache then
-    TermColors.Cache[input] = str
+  if not Ink.DisableCache then
+    Ink.Cache[input] = str
   end
 
   return str
 end
 
-function TermColors:print(str, ...) print(self:compile(tostring(str or "")):format(...)) end;
+function Ink:print(str, ...) print(self:compile(tostring(str or "")):format(...)) end;
 
-return setmetatable(TermColors, { __call = TermColors.print })
+return setmetatable(Ink, { __call = Ink.print })
